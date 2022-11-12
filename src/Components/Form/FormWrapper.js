@@ -1,22 +1,27 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import Button from '../UI/Button'
 import ErrorModel from '../UI/ErrorModel'
 
 const FormWrapper = (props) => {
-    const [error, setError] = useState()
-    const [userName, setUserName] = useState('')
-    const [age, setAge] = useState('')
-    const userNameChangeHandler = (event) => {
-        setUserName(event.target.value)
-    }
+    const nameInputRef = useRef()
+    const ageInputRef = useRef()
 
-    const ageChangeHandler = (event) => {
-        setAge(event.target.value)
-    }
+    const [error, setError] = useState()
+    // const [userName, setUserName] = useState('')
+    // const [age, setAge] = useState('')
+    // const userNameChangeHandler = (event) => {
+    //     setUserName(event.target.value)
+    // }
+
+    // const ageChangeHandler = (event) => {
+    //     setAge(event.target.value)
+    // }
 
     const formSubmitHandler = (event) => {
         event.preventDefault()
-        if (userName.trim().length === 0 || age.trim().length === 0) {
+        const enteredName = nameInputRef.current.value
+        const enteredAge = ageInputRef.current.value
+        if (enteredName.trim().length === 0 || enteredAge.trim().length === 0) {
             setError({
                 header: "Invalid input!",
                 message: "Please enter valid name & age (non-empty values)"
@@ -24,7 +29,7 @@ const FormWrapper = (props) => {
             return
         }
 
-        if (+age < 1) {
+        if (+enteredAge < 1) {
             setError({
                 header: "Invalid age!",
                 message: "Please enter valid age (age should be greater than 0)"
@@ -34,12 +39,14 @@ const FormWrapper = (props) => {
 
         const userData = {
             id: Math.random().toString(),
-            name: userName,
-            age,
+            name: enteredName,
+            age: enteredAge,
         }
         props.onAddUser(userData)
-        setUserName('')
-        setAge('')
+        nameInputRef.current.value = ''
+        ageInputRef.current.value = ''
+        // setUserName('')
+        // setAge('')
     }
 
     const errorHandler = () => {
@@ -53,11 +60,11 @@ const FormWrapper = (props) => {
                 <div className='bg-slate-800 mobile:px-2 tablet:px-10 py-5 rounded-lg'>
                     <div className='flex flex-col mb-2'>
                         <label htmlFor='username' className='text-white font-bold mb-1'>Username</label>
-                        <input id="username" type="text" onChange={userNameChangeHandler} value={userName} className='mobile:w-60 tablet:w-96 rounded-md h-8 outline-none p-2 text-lg' />
+                        <input ref={nameInputRef} id="username" type="text" className='mobile:w-60 tablet:w-96 rounded-md h-8 outline-none p-2 text-lg' />
                     </div>
                     <div className='flex flex-col mb-2'>
                         <label htmlFor='age' className='text-white font-bold mb-1'>Age (years)</label>
-                        <input id="age" type="number" onChange={ageChangeHandler} value={age} className='mobile:w-60 tablet:w-96 rounded-md h-8 outline-none p-2 text-lg' />
+                        <input ref={ageInputRef} id="age" type="number" className='mobile:w-60 tablet:w-96 rounded-md h-8 outline-none p-2 text-lg' />
                     </div>
                     <Button type="submit">Submit</Button>
                 </div>
